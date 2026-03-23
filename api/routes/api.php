@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BetController;
+use App\Http\Controllers\Api\V1\ExternalSyncController;
 use App\Http\Controllers\Api\V1\OddController;
 use App\Http\Controllers\Api\V1\SportController;
 use App\Http\Controllers\Api\V1\SportMatchController;
+use App\Http\Controllers\Api\V1\StatsController;
 use App\Http\Controllers\Api\V1\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,11 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::apiResource('bets', BetController::class);
+
+        Route::prefix('stats')->group(function () {
+            Route::get('/bets-by-sport', [StatsController::class, 'betsBySport']);
+            Route::get('/user-performance', [StatsController::class, 'userPerformance']);
+        });
     });
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function (): void {
