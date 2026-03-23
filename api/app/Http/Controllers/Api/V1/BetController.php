@@ -6,21 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBetRequest;
 use App\Http\Requests\UpdateBetRequest;
 use App\Models\Bet;
-use App\Models\Odd;
+use App\Repositories\BetRepository;
+use App\Repositories\OddRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class BetController extends Controller
 {
+    public function __construct(
+        private readonly BetRepository $bets,
+        private readonly OddRepository $odds
+    ) {}
+
     public function index(): JsonResponse
     {
-        $bets = Bet::query()
-            ->where('user_id', request()->user()->id)
-            ->when(request()->filled('status'), fn($q) => $q->where('status', request('status')))
-            ->with('match')
-            ->orderByDesc('created_at')
-            ->paginate(min((int) request('per_page', 15), 50));
+        $bets = $this->bets->forUser(
+            request()->user()->id,
+            request()->only(['status', 'per_page'])
+        );
 
         return response()->json($bets);
     }
@@ -29,7 +33,7 @@ class BetController extends Controller
     {
         $data = $request->validated();
 
-        $odd = Odd::query()->where('match_id', $data['match_id'])->latest()->first();
+        $odd = $this->odds->latestForMatch($data['match_id']);
         if (!$odd) {
             throw ValidationException::withMessages([
                 'match_id' => ['Aucune cote disponible pour ce match.'],
@@ -42,7 +46,7 @@ class BetController extends Controller
             'away_win' => $odd->away_win,
         };
 
-        $bet = Bet::query()->create([
+        $bet = $this->bets->create([
             ...$data,
             'user_id'        => $request->user()->id,
             'odds_value'     => $oddsValue,
