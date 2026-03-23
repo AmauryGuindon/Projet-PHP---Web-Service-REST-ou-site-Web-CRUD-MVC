@@ -10,12 +10,12 @@ use App\Http\Controllers\Api\V1\StatsController;
 use App\Http\Controllers\Api\V1\TeamController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function (): void {
+Route::prefix('v1')->middleware('throttle:api')->group(function (): void {
     Route::get('/public/ping', function () {
         return response()->json(['message' => 'pong']);
     });
 
-    Route::prefix('auth')->group(function (): void {
+    Route::prefix('auth')->middleware('throttle:auth')->group(function (): void {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
     });
