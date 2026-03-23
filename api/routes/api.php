@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function (): void {
         ->parameters(['matches' => 'matchItem'])
         ->only(['index', 'show']);
     Route::apiResource('odds', OddController::class)->only(['index', 'show']);
+    Route::get('/external/sports', [ExternalSyncController::class, 'sports']);
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/me', [AuthController::class, 'me']);
