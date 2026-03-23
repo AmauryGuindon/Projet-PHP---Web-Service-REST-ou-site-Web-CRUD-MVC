@@ -3,29 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin — Paris Sportifs</title>
+    <title>Administration — BetZone</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <nav>
-    <a class="brand" href="index.html">⚽ Paris Sportifs</a>
-    <a href="matches.html">Matchs</a>
-    <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
-    <a href="admin.html" class="active" id="nav-admin" style="display:none">Admin</a>
-    <span class="spacer"></span>
-    <span class="nav-user" id="nav-user"></span>
-    <a id="nav-login" href="login.html">Connexion</a>
-    <a href="#" id="nav-logout" style="display:none">Déconnexion</a>
+    <a class="nav-brand" href="index.html"><div class="logo-icon">⚡</div>BetZone</a>
+    <div class="nav-links" id="nav-links">
+        <a href="matches.html">Matchs</a>
+        <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
+        <a href="admin.html" class="active" id="nav-admin" style="display:none">Admin</a>
+        <span class="nav-spacer"></span>
+        <div class="nav-user-pill" id="nav-user-pill" style="display:none"><div class="nav-user-avatar" id="nav-avatar">U</div><span id="nav-user"></span></div>
+        <a id="nav-login" href="login.html" class="btn btn-ghost btn-sm">Connexion</a>
+        <a href="#" id="nav-logout" style="display:none" class="btn btn-ghost btn-sm">Déconnexion</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle">☰</button>
 </nav>
 
 <main>
-    <h1>Panneau Administration</h1>
+    <div class="page-header">
+        <h1>Administration</h1>
+        <p>Gérez les sports, équipes, matchs et cotes</p>
+    </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="showAdminTab('sports', this)">Sports</button>
-        <button class="tab-btn" onclick="showAdminTab('teams', this)">Équipes</button>
-        <button class="tab-btn" onclick="showAdminTab('matches', this)">Matchs</button>
-        <button class="tab-btn" onclick="showAdminTab('odds', this)">Cotes</button>
+        <button class="tab-btn active" onclick="showAdminTab('sports',this)">⚽ Sports</button>
+        <button class="tab-btn" onclick="showAdminTab('teams',this)">👥 Équipes</button>
+        <button class="tab-btn" onclick="showAdminTab('matches',this)">📅 Matchs</button>
+        <button class="tab-btn" onclick="showAdminTab('odds',this)">📊 Cotes</button>
     </div>
 
     <div id="admin-alert" style="display:none" class="alert"></div>

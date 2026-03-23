@@ -3,63 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matchs — Paris Sportifs</title>
+    <title>Matchs — BetZone</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <nav>
-    <a class="brand" href="index.html">⚽ Paris Sportifs</a>
-    <a href="matches.html" class="active">Matchs</a>
-    <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
-    <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
-    <span class="spacer"></span>
-    <span class="nav-user" id="nav-user"></span>
-    <a id="nav-login" href="login.html">Connexion</a>
-    <a href="#" id="nav-logout" style="display:none">Déconnexion</a>
+    <a class="nav-brand" href="index.html"><div class="logo-icon">⚡</div>BetZone</a>
+    <div class="nav-links" id="nav-links">
+        <a href="matches.html" class="active">Matchs</a>
+        <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
+        <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
+        <span class="nav-spacer"></span>
+        <div class="nav-user-pill" id="nav-user-pill" style="display:none"><div class="nav-user-avatar" id="nav-avatar">U</div><span id="nav-user"></span></div>
+        <a id="nav-login" href="login.html" class="btn btn-ghost btn-sm">Connexion</a>
+        <a href="#" id="nav-logout" style="display:none" class="btn btn-ghost btn-sm">Déconnexion</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle">☰</button>
 </nav>
 
 <main>
-    <h1>Matchs</h1>
+    <div class="page-header">
+        <h1>Matchs</h1>
+        <p>Parcourez les rencontres et placez vos paris</p>
+    </div>
 
     <div class="filters">
-        <select id="filter-sport">
-            <option value="">Tous les sports</option>
-        </select>
+        <select id="filter-sport"><option value="">🏆 Tous les sports</option></select>
         <select id="filter-status">
             <option value="">Tous les statuts</option>
-            <option value="scheduled">Programmés</option>
-            <option value="live">En cours</option>
-            <option value="finished">Terminés</option>
+            <option value="scheduled">📅 Programmés</option>
+            <option value="live">🔴 En cours</option>
+            <option value="finished">✅ Terminés</option>
         </select>
         <button class="btn btn-primary" onclick="loadMatches()">Filtrer</button>
     </div>
 
-    <div id="matches-container" class="loading">Chargement...</div>
+    <div id="matches-container" class="loading"></div>
 
-    <!-- Modal Pari -->
     <div id="bet-modal" class="modal-backdrop">
         <div class="modal">
             <div class="modal-header">
-                <h3>Placer un pari</h3>
+                <h3>🎯 Placer un pari</h3>
                 <button class="modal-close" onclick="closeBetModal()">✕</button>
             </div>
-            <div id="bet-modal-content"></div>
+            <div id="bet-modal-content" style="margin-bottom:1.25rem"></div>
             <form id="bet-form" onsubmit="submitBet(event)">
                 <input type="hidden" id="bet-match-id">
                 <div class="form-group">
                     <label>Pronostic</label>
                     <select id="bet-outcome" required>
-                        <option value="home_win">Victoire domicile</option>
-                        <option value="draw">Match nul</option>
-                        <option value="away_win">Victoire extérieur</option>
+                        <option value="home_win">🏠 Victoire domicile</option>
+                        <option value="draw">🤝 Match nul</option>
+                        <option value="away_win">✈️ Victoire extérieur</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Mise (€)</label>
-                    <input type="number" id="bet-amount" min="1" max="10000" step="0.01" value="10" required>
+                    <input type="number" id="bet-amount" min="1" max="10000" step="1" value="10" required>
+                </div>
+                <div id="bet-potential" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:.75rem;margin-bottom:1rem;font-size:.875rem;display:none">
+                    Gain potentiel : <strong id="bet-gain-value" style="color:var(--gold-light)"></strong>
                 </div>
                 <div id="bet-form-error" class="alert alert-danger" style="display:none"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Confirmer le pari</button>
+                <button type="submit" class="btn btn-gold" style="width:100%">Confirmer le pari</button>
             </form>
         </div>
     </div>

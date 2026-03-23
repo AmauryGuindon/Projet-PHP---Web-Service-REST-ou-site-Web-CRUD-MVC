@@ -3,80 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paris Sportifs — Accueil</title>
+    <title>BetZone — Paris Sportifs</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <nav>
-    <a class="brand" href="index.html">⚽ Paris Sportifs</a>
-    <a href="matches.html">Matchs</a>
-    <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
-    <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
-    <span class="spacer"></span>
-    <span class="nav-user" id="nav-user"></span>
-    <a id="nav-login" href="login.html">Connexion</a>
-    <a href="#" id="nav-logout" style="display:none">Déconnexion</a>
+    <a class="nav-brand" href="index.html">
+        <div class="logo-icon">⚡</div>
+        BetZone
+    </a>
+    <div class="nav-links" id="nav-links">
+        <a href="matches.html">Matchs</a>
+        <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
+        <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
+        <span class="nav-spacer"></span>
+        <div class="nav-user-pill" id="nav-user-pill" style="display:none">
+            <div class="nav-user-avatar" id="nav-avatar">U</div>
+            <span id="nav-user"></span>
+        </div>
+        <a id="nav-login" href="login.html" class="btn btn-ghost btn-sm">Connexion</a>
+        <a href="#" id="nav-logout" style="display:none" class="btn btn-ghost btn-sm">Déconnexion</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">☰</button>
 </nav>
 
 <main>
-    <h1>Bienvenue sur Paris Sportifs</h1>
-
-    <div id="sports-section">
-        <h2>Sports disponibles</h2>
-        <div id="sports-list" class="loading">Chargement...</div>
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Pariez sur les <span>meilleurs matchs</span></h1>
+        <p>Accédez aux meilleures cotes en temps réel et pariez sur vos sports favoris.</p>
+        <div class="hero-cta">
+            <a href="matches.html" class="btn btn-primary btn-lg">Voir les matchs</a>
+            <a href="login.html" class="btn btn-ghost btn-lg" id="hero-login-btn">Créer un compte</a>
+        </div>
     </div>
 
-    <div id="matches-section" style="margin-top:2rem">
-        <h2>Prochains matchs</h2>
-        <div id="matches-list" class="loading">Chargement...</div>
-    </div>
+    <!-- Sports -->
+    <section>
+        <div class="section-header">
+            <h2>Sports disponibles</h2>
+        </div>
+        <div id="sports-list" class="loading"></div>
+    </section>
+
+    <!-- Matchs -->
+    <section style="margin-top:2.5rem">
+        <div class="section-header">
+            <h2 id="matches-title">Prochains matchs</h2>
+            <a href="matches.html" class="btn btn-ghost btn-sm">Tous les matchs →</a>
+        </div>
+        <div id="matches-list" class="loading"></div>
+    </section>
 </main>
 
 <script src="assets/js/api.js"></script>
 <script src="assets/js/auth.js"></script>
 <script>
+    const sportIcons = { football:'⚽', basketball:'🏀', rugby:'🏉', tennis:'🎾', handball:'🤾', volleyball:'🏐', cyclisme:'🚴', hockey:'🏒' };
+
     async function loadSports() {
         try {
             const data = await Api.get('/sports');
             const sports = data.data || [];
             const el = document.getElementById('sports-list');
-            if (!sports.length) { el.innerHTML = '<p class="empty">Aucun sport disponible.</p>'; return; }
+            if (!sports.length) { el.innerHTML = '<p class="empty">Aucun sport.</p>'; return; }
             el.innerHTML = `<div class="card-grid">${sports.map(s => `
-                <div class="card" style="cursor:pointer" onclick="filterBySport('${s.id}','${s.name}')">
-                    <strong>${s.name}</strong>
-                    <div style="font-size:.8rem;color:var(--text-muted);margin-top:.3rem">${s.slug}</div>
+                <div class="sport-card" onclick="filterBySport('${s.id}','${s.name}')">
+                    <div class="sport-icon">${sportIcons[s.slug] || '🏆'}</div>
+                    <div class="sport-name">${s.name}</div>
+                    <div class="sport-slug">${s.slug}</div>
                 </div>`).join('')}</div>`;
-        } catch (e) {
-            document.getElementById('sports-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>';
-        }
+        } catch(e) { document.getElementById('sports-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
     }
 
     async function loadMatches(sportId = null) {
+        const qs = (sportId ? `?sport_id=${sportId}&` : '?') + 'status=scheduled&per_page=6';
         try {
-            const qs = sportId ? `?sport_id=${sportId}&status=scheduled` : '?status=scheduled';
             const data = await Api.get('/matches' + qs);
             const matches = data.data || [];
             const el = document.getElementById('matches-list');
             if (!matches.length) { el.innerHTML = '<p class="empty">Aucun match programmé.</p>'; return; }
-            el.innerHTML = `<div class="card-grid">${matches.map(m => `
-                <div class="match-card">
-                    <div class="match-teams">${m.home_team?.name ?? '?'} vs ${m.away_team?.name ?? '?'}</div>
-                    <div class="match-meta">${m.sport?.name ?? ''} · ${new Date(m.starts_at).toLocaleString('fr-FR')}</div>
-                    <span class="badge badge-${m.status}">${m.status}</span>
-                    <div style="margin-top:.6rem">
-                        <a class="btn btn-primary btn-sm" href="matches.html?match=${m.id}">Voir / Parier</a>
+
+            const oddsMap = {};
+            await Promise.all(matches.slice(0,6).map(async m => {
+                try { const o = await Api.get(`/odds?match_id=${m.id}`); oddsMap[m.id] = (o.data||[])[0]||null; } catch(_){}
+            }));
+
+            el.innerHTML = `<div class="grid-3">${matches.map(m => {
+                const odd = oddsMap[m.id];
+                return `<div class="match-card">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span class="match-sport-tag">${sportIcons[m.sport?.slug]||'🏆'} ${m.sport?.name||''}</span>
+                        <span class="badge badge-${m.status}">${m.status}</span>
                     </div>
-                </div>`).join('')}</div>`;
-        } catch (e) {
-            document.getElementById('matches-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>';
-        }
+                    <div class="match-teams">
+                        <div class="team-name">${m.home_team?.name||'?'}</div>
+                        <div class="vs-badge">VS</div>
+                        <div class="team-name away">${m.away_team?.name||'?'}</div>
+                    </div>
+                    <div class="match-date">📅 ${new Date(m.starts_at).toLocaleString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+                    ${odd ? `<div class="match-odds">
+                        <button class="odd-btn"><span class="odd-label">1</span><span class="odd-value">${odd.home_win}</span></button>
+                        <button class="odd-btn"><span class="odd-label">N</span><span class="odd-value">${odd.draw}</span></button>
+                        <button class="odd-btn"><span class="odd-label">2</span><span class="odd-value">${odd.away_win}</span></button>
+                    </div>` : '<div class="match-date">Cotes bientôt disponibles</div>'}
+                    <a href="matches.html" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Parier →</a>
+                </div>`;
+            }).join('')}</div>`;
+        } catch(e) { document.getElementById('matches-list').innerHTML = '<p class="alert alert-danger">Erreur.</p>'; }
     }
 
     function filterBySport(id, name) {
-        document.getElementById('matches-section').querySelector('h2').textContent = `Prochains matchs — ${name}`;
+        document.getElementById('matches-title').textContent = `Prochains matchs — ${name}`;
+        document.getElementById('matches-list').innerHTML = '<div class="loading"></div>';
         loadMatches(id);
     }
 
+    if (Api.isLoggedIn()) document.getElementById('hero-login-btn').style.display = 'none';
     loadSports();
     loadMatches();
 </script>
