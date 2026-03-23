@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paris Sportifs — Accueil</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<nav>
+    <a class="brand" href="index.html">⚽ Paris Sportifs</a>
+    <a href="matches.html">Matchs</a>
+    <a id="nav-bets" href="my-bets.html" style="display:none">Mes Paris</a>
+    <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
+    <span class="spacer"></span>
+    <span class="nav-user" id="nav-user"></span>
+    <a id="nav-login" href="login.html">Connexion</a>
+    <a href="#" id="nav-logout" style="display:none">Déconnexion</a>
+</nav>
+
+<main>
+    <h1>Bienvenue sur Paris Sportifs</h1>
+
+    <div id="sports-section">
+        <h2>Sports disponibles</h2>
+        <div id="sports-list" class="loading">Chargement...</div>
+    </div>
+
+    <div id="matches-section" style="margin-top:2rem">
+        <h2>Prochains matchs</h2>
+        <div id="matches-list" class="loading">Chargement...</div>
+    </div>
+</main>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+    async function loadSports() {
+        try {
+            const data = await Api.get('/sports');
+            const sports = data.data || [];
+            const el = document.getElementById('sports-list');
+            if (!sports.length) { el.innerHTML = '<p class="empty">Aucun sport disponible.</p>'; return; }
+            el.innerHTML = `<div class="card-grid">${sports.map(s => `
+                <div class="card" style="cursor:pointer" onclick="filterBySport('${s.id}','${s.name}')">
+                    <strong>${s.name}</strong>
+                    <div style="font-size:.8rem;color:var(--text-muted);margin-top:.3rem">${s.slug}</div>
+                </div>`).join('')}</div>`;
+        } catch (e) {
+            document.getElementById('sports-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>';
+        }
+    }
+
+    async function loadMatches(sportId = null) {
+        try {
+            const qs = sportId ? `?sport_id=${sportId}&status=scheduled` : '?status=scheduled';
+            const data = await Api.get('/matches' + qs);
+            const matches = data.data || [];
+            const el = document.getElementById('matches-list');
+            if (!matches.length) { el.innerHTML = '<p class="empty">Aucun match programmé.</p>'; return; }
+            el.innerHTML = `<div class="card-grid">${matches.map(m => `
+                <div class="match-card">
+                    <div class="match-teams">${m.home_team?.name ?? '?'} vs ${m.away_team?.name ?? '?'}</div>
+                    <div class="match-meta">${m.sport?.name ?? ''} · ${new Date(m.starts_at).toLocaleString('fr-FR')}</div>
+                    <span class="badge badge-${m.status}">${m.status}</span>
+                    <div style="margin-top:.6rem">
+                        <a class="btn btn-primary btn-sm" href="matches.html?match=${m.id}">Voir / Parier</a>
+                    </div>
+                </div>`).join('')}</div>`;
+        } catch (e) {
+            document.getElementById('matches-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>';
+        }
+    }
+
+    function filterBySport(id, name) {
+        document.getElementById('matches-section').querySelector('h2').textContent = `Prochains matchs — ${name}`;
+        loadMatches(id);
+    }
+
+    loadSports();
+    loadMatches();
+</script>
+</body>
+</html>

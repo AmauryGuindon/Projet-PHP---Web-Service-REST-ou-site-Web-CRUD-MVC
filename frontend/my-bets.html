@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Paris — Paris Sportifs</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<nav>
+    <a class="brand" href="index.html">⚽ Paris Sportifs</a>
+    <a href="matches.html">Matchs</a>
+    <a href="my-bets.html" class="active" id="nav-bets" style="display:none">Mes Paris</a>
+    <a id="nav-admin" href="admin.html" style="display:none">Admin</a>
+    <span class="spacer"></span>
+    <span class="nav-user" id="nav-user"></span>
+    <a id="nav-login" href="login.html">Connexion</a>
+    <a href="#" id="nav-logout" style="display:none">Déconnexion</a>
+</nav>
+
+<main>
+    <h1>Mes Paris</h1>
+
+    <div class="filters">
+        <select id="filter-status" onchange="loadBets()">
+            <option value="">Tous</option>
+            <option value="pending">En attente</option>
+            <option value="won">Gagnés</option>
+            <option value="lost">Perdus</option>
+            <option value="cancelled">Annulés</option>
+        </select>
+    </div>
+
+    <div id="stats-bar" style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap"></div>
+    <div id="bets-container" class="loading">Chargement...</div>
+</main>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/bets.js"></script>
+</body>
+</html>
