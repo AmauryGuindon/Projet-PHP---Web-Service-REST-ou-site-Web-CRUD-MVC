@@ -8,31 +8,73 @@ use Illuminate\Database\Seeder;
 
 class TeamSeeder extends Seeder
 {
-    private array $teamsBySlug = [
-        'football'         => [['Paris FC', 'PFC'], ['Lyon United', 'LYO'], ['Marseille AS', 'MAS'], ['Bordeaux FC', 'BDX'], ['Nice SC', 'NSC']],
-        'basketball'       => [['Paris Bulls', 'PBL'], ['Lyon Lakers', 'LLA'], ['Marseille Heat', 'MHE'], ['Strasbourg Nets', 'SNE'], ['Dijon Stars', 'DST']],
-        'tennis'           => [['Club Tennis Paris', 'CTP'], ['Lyon Tennis', 'LTE'], ['Nice Tennis', 'NTE'], ['Bordeaux TC', 'BTC'], ['Grenoble TC', 'GTC']],
-        'rugby'            => [['Stade Toulousain', 'STL'], ['Racing 92', 'R92'], ['La Rochelle', 'LRO'], ['Bordeaux Bègles', 'UBB'], ['Toulon RC', 'RCT']],
-        'handball'         => [['Paris HB', 'PHB'], ['Montpellier HB', 'MHB'], ['Nantes HB', 'NHB'], ['Nîmes HB', 'NHB2'], ['Chambéry HB', 'CHB']],
-        'volleyball'       => [['Paris Volley', 'PVO'], ['Tours VB', 'TVB'], ['Chaumont VB', 'CVB'], ['Montpellier UC', 'MUC'], ['Cannes RC', 'CRC']],
-        'hockey-sur-glace' => [['Rouen Dragons', 'RDR'], ['Grenoble BH', 'GBH'], ['Angers FH', 'AFH'], ['Bordeaux GF', 'BGF'], ['Gap HP', 'GHP']],
-        'cyclisme'         => [['Team Cofidis', 'COF'], ['AG2R Citroën', 'AG2'], ['Groupama FDJ', 'FDJ'], ['Decathlon AG2R', 'DAG'], ['Arkéa Samsic', 'ARK']],
+    private array $teams = [
+        'football' => [
+            ['Paris Saint-Germain', 'PSG', 'France'],
+            ['Olympique de Marseille', 'OM', 'France'],
+            ['Olympique Lyonnais', 'OL', 'France'],
+            ['AS Monaco', 'ASM', 'Monaco'],
+            ['LOSC Lille', 'LOSC', 'France'],
+            ['OGC Nice', 'OGCN', 'France'],
+            ['Stade Rennais', 'SRFC', 'France'],
+            ['RC Lens', 'RCL', 'France'],
+            ['FC Nantes', 'FCN', 'France'],
+            ['Stade de Reims', 'SDR', 'France'],
+            ['Montpellier HSC', 'MHSC', 'France'],
+            ['RC Strasbourg', 'RCSA', 'France'],
+        ],
+        'basketball' => [
+            ['Real Madrid', 'RMA', 'Espagne'],
+            ['FC Barcelona', 'FCB', 'Espagne'],
+            ['Olympiacos', 'OLY', 'Grèce'],
+            ['CSKA Moscou', 'CSK', 'Russie'],
+            ['Fenerbahçe', 'FEN', 'Turquie'],
+            ['Anadolu Efes', 'EFS', 'Turquie'],
+            ['Panathinaikos', 'PAN', 'Grèce'],
+            ['Maccabi Tel Aviv', 'MAC', 'Israël'],
+        ],
+        'rugby' => [
+            ['Stade Toulousain', 'STL', 'France'],
+            ['Racing 92', 'R92', 'France'],
+            ['La Rochelle', 'LRO', 'France'],
+            ['Stade Rochelais', 'SR', 'France'],
+            ['Union Bordeaux-Bègles', 'UBB', 'France'],
+            ['RC Toulon', 'RCT', 'France'],
+            ['Montpellier HR', 'MHR', 'France'],
+            ['Clermont Auvergne', 'ASM', 'France'],
+        ],
+        'tennis' => [
+            ['Novak Djokovic', 'DJO', 'Serbie'],
+            ['Carlos Alcaraz', 'ALC', 'Espagne'],
+            ['Jannik Sinner', 'SIN', 'Italie'],
+            ['Rafael Nadal', 'NAD', 'Espagne'],
+            ['Daniil Medvedev', 'MED', 'Russie'],
+            ['Alexander Zverev', 'ZVE', 'Allemagne'],
+        ],
+        'handball' => [
+            ['Paris Saint-Germain HB', 'PSGHB', 'France'],
+            ['Montpellier HB', 'MHB', 'France'],
+            ['HBC Nantes', 'HBC', 'France'],
+            ['Chambéry Savoie', 'CSM', 'France'],
+            ['Toulouse HB', 'THB', 'France'],
+            ['FC Barcelona Handbol', 'BARÇA', 'Espagne'],
+        ],
     ];
 
     public function run(): void
     {
         $sports = Sport::all()->keyBy('slug');
 
-        foreach ($this->teamsBySlug as $slug => $teams) {
+        foreach ($this->teams as $slug => $teams) {
             if (!isset($sports[$slug])) continue;
             $sport = $sports[$slug];
 
-            foreach ($teams as [$name, $short]) {
+            foreach ($teams as [$name, $short, $country]) {
                 Team::create([
                     'sport_id'   => $sport->id,
                     'name'       => $name,
                     'short_name' => $short,
-                    'country'    => 'France',
+                    'country'    => $country,
                     'logo_url'   => null,
                 ]);
             }

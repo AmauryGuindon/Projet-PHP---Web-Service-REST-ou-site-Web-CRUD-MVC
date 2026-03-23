@@ -11,14 +11,17 @@ class SportSeeder extends Seeder
     public function run(): void
     {
         $sports = [
-            'Football', 'Basketball', 'Tennis', 'Rugby',
-            'Handball', 'Volleyball', 'Hockey sur glace', 'Cyclisme',
+            ['name' => 'Football', 'slug' => 'football'],
+            ['name' => 'Basketball', 'slug' => 'basketball'],
+            ['name' => 'Rugby', 'slug' => 'rugby'],
+            ['name' => 'Tennis', 'slug' => 'tennis'],
+            ['name' => 'Handball', 'slug' => 'handball'],
         ];
 
-        foreach ($sports as $name) {
+        foreach ($sports as $sport) {
             Sport::create([
-                'name'      => $name,
-                'slug'      => Str::slug($name),
+                'name'      => $sport['name'],
+                'slug'      => $sport['slug'],
                 'is_active' => true,
             ]);
         }

@@ -17,27 +17,34 @@ class MatchSeeder extends Seeder
             $teams = Team::where('sport_id', $sport->id)->get();
             if ($teams->count() < 2) continue;
 
-            // Match 1: teams[0] vs teams[1]
-            SportMatch::create([
-                'sport_id'     => $sport->id,
-                'home_team_id' => $teams[0]->id,
-                'away_team_id' => $teams[1]->id,
-                'starts_at'    => now()->addDays(rand(1, 7)),
-                'status'       => 'scheduled',
-                'home_score'   => null,
-                'away_score'   => null,
-            ]);
+            $matchups = [
+                [0, 1, 1, 'scheduled'],
+                [2, 3, 3, 'scheduled'],
+                [4, 5, 7, 'scheduled'],
+                [1, 2, -2, 'finished'],
+                [3, 4, -5, 'finished'],
+            ];
 
-            // Match 2: teams[2] vs teams[3]
-            SportMatch::create([
-                'sport_id'     => $sport->id,
-                'home_team_id' => $teams[2]->id,
-                'away_team_id' => $teams[3]->id,
-                'starts_at'    => now()->addDays(rand(8, 14)),
-                'status'       => 'scheduled',
-                'home_score'   => null,
-                'away_score'   => null,
-            ]);
+            foreach ($matchups as [$hi, $ai, $days, $status]) {
+                if (!isset($teams[$hi]) || !isset($teams[$ai])) continue;
+
+                $homeScore = null;
+                $awayScore = null;
+                if ($status === 'finished') {
+                    $homeScore = rand(0, 3);
+                    $awayScore = rand(0, 3);
+                }
+
+                SportMatch::create([
+                    'sport_id'     => $sport->id,
+                    'home_team_id' => $teams[$hi]->id,
+                    'away_team_id' => $teams[$ai]->id,
+                    'starts_at'    => now()->addDays($days),
+                    'status'       => $status,
+                    'home_score'   => $homeScore,
+                    'away_score'   => $awayScore,
+                ]);
+            }
         }
     }
 }
