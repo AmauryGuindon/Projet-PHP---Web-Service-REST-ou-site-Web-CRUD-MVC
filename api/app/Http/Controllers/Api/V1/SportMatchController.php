@@ -7,6 +7,7 @@ use App\Http\Requests\StoreSportMatchRequest;
 use App\Http\Requests\UpdateSportMatchRequest;
 use App\Models\SportMatch;
 use App\Models\Team;
+use App\Services\BetSettlementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
@@ -82,6 +83,25 @@ class SportMatchController extends Controller
         $matchItem->delete();
 
         return response()->noContent();
+    }
+
+    public function settle(SportMatch $matchItem, BetSettlementService $settlementService): JsonResponse
+    {
+        abort_if($matchItem->status === 'finished', 422, 'Match déjà résolu.');
+        abort_if(
+            is_null($matchItem->home_score) || is_null($matchItem->away_score),
+            422,
+            'Les scores doivent être définis avant la résolution.'
+        );
+
+        $matchItem->update(['status' => 'finished']);
+        $count = $settlementService->settleMatch($matchItem);
+
+        return response()->json([
+            'message'       => 'Match résolu.',
+            'bets_resolved' => $count,
+            'match'         => $matchItem->fresh(),
+        ]);
     }
 
     private function assertTeamsBelongToSport(array $payload): void

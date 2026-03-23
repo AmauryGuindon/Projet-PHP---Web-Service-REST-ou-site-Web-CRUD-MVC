@@ -42,5 +42,6 @@ Route::prefix('v1')->group(function (): void {
             ->parameters(['matches' => 'matchItem'])
             ->except(['index', 'show']);
         Route::apiResource('odds', OddController::class)->except(['index', 'show']);
+        Route::post('matches/{matchItem}/settle', [SportMatchController::class, 'settle']);
     });
 });
