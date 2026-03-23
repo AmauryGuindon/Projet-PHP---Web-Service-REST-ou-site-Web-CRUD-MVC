@@ -11,6 +11,7 @@ use App\Repositories\OddRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
 class BetController extends Controller
 {
@@ -29,6 +30,28 @@ class BetController extends Controller
         return response()->json($bets);
     }
 
+    #[OA\Post(
+        path: '/bets',
+        summary: 'Placer un pari',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['match_id', 'amount', 'predicted_outcome'],
+                properties: [
+                    new OA\Property(property: 'match_id', type: 'string'),
+                    new OA\Property(property: 'amount', type: 'number', example: 50),
+                    new OA\Property(property: 'predicted_outcome', type: 'string', enum: ['home_win', 'draw', 'away_win']),
+                ]
+            )
+        ),
+        tags: ['Bets'],
+        responses: [
+            new OA\Response(response: 201, description: 'Pari créé'),
+            new OA\Response(response: 401, description: 'Non authentifié'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function store(StoreBetRequest $request): JsonResponse
     {
         $data = $request->validated();

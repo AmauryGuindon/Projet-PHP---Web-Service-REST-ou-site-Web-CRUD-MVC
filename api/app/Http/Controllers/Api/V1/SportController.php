@@ -8,12 +8,16 @@ use App\Http\Requests\UpdateSportRequest;
 use App\Models\Sport;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use OpenApi\Attributes as OA;
 
 class SportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    #[OA\Get(
+        path: '/sports',
+        summary: 'Lister les sports',
+        tags: ['Sports'],
+        responses: [new OA\Response(response: 200, description: 'Liste paginée des sports')]
+    )]
     public function index(): JsonResponse
     {
         $sports = Sport::query()

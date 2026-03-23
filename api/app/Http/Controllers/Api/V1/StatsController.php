@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Bet;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class StatsController extends Controller
 {
-    /**
-     * Map Reduce #1: Total des mises et gains potentiels par sport
-     */
+    #[OA\Get(
+        path: '/stats/bets-by-sport',
+        summary: 'Statistiques paris par sport (Map Reduce MongoDB)',
+        security: [['bearerAuth' => []]],
+        tags: ['Stats'],
+        responses: [new OA\Response(response: 200, description: 'Agrégation des paris par sport')]
+    )]
     public function betsBySport(): JsonResponse
     {
         $pipeline = [
@@ -34,9 +39,13 @@ class StatsController extends Controller
         ]);
     }
 
-    /**
-     * Map Reduce #2: Performance par utilisateur (victoires, pertes, ROI)
-     */
+    #[OA\Get(
+        path: '/stats/user-performance',
+        summary: 'Performance ROI par utilisateur (Map Reduce MongoDB)',
+        security: [['bearerAuth' => []]],
+        tags: ['Stats'],
+        responses: [new OA\Response(response: 200, description: 'Performance par utilisateur')]
+    )]
     public function userPerformance(): JsonResponse
     {
         $pipeline = [

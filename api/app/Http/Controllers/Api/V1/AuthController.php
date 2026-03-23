@@ -9,9 +9,43 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
+#[OA\Info(
+    title: 'Paris Sportifs API',
+    version: '1.0.0',
+    description: 'API REST de gestion de paris sportifs - Laravel 12 + MongoDB'
+)]
+#[OA\SecurityScheme(
+    securityScheme: 'bearerAuth',
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'Sanctum'
+)]
+#[OA\Server(url: 'http://localhost:8000/api/v1', description: 'Dev server')]
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: '/auth/register',
+        summary: 'Créer un compte',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name', 'email', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Jean Dupont'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jean@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'secret123'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', example: 'secret123'),
+                ]
+            )
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 201, description: 'Compte créé'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -36,6 +70,25 @@ class AuthController extends Controller
         ], 201);
     }
 
+    #[OA\Post(
+        path: '/auth/login',
+        summary: 'Se connecter',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password'),
+                ]
+            )
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Token renvoyé'),
+            new OA\Response(response: 401, description: 'Identifiants invalides'),
+        ]
+    )]
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
