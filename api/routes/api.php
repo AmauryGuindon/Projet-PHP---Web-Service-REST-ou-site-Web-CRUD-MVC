@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BetController;
+use App\Http\Controllers\Api\V1\OddController;
 use App\Http\Controllers\Api\V1\SportController;
 use App\Http\Controllers\Api\V1\SportMatchController;
 use App\Http\Controllers\Api\V1\TeamController;
@@ -21,10 +23,12 @@ Route::prefix('v1')->group(function (): void {
     Route::apiResource('matches', SportMatchController::class)
         ->parameters(['matches' => 'matchItem'])
         ->only(['index', 'show']);
+    Route::apiResource('odds', OddController::class)->only(['index', 'show']);
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::apiResource('bets', BetController::class);
     });
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function (): void {
@@ -37,5 +41,6 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('matches', SportMatchController::class)
             ->parameters(['matches' => 'matchItem'])
             ->except(['index', 'show']);
+        Route::apiResource('odds', OddController::class)->except(['index', 'show']);
     });
 });
