@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SportMatch extends Model
 {
     use HasFactory;
 
-    protected $table = 'matches';
+    protected $connection = 'mongodb';
+    protected $collection = 'matches';
 
     protected $fillable = [
         'sport_id',
@@ -25,21 +25,23 @@ class SportMatch extends Model
     protected function casts(): array
     {
         return [
-            'starts_at' => 'datetime',
+            'starts_at'  => 'datetime',
+            'home_score' => 'integer',
+            'away_score' => 'integer',
         ];
     }
 
-    public function sport(): BelongsTo
+    public function sport()
     {
-        return $this->belongsTo(Sport::class);
+        return $this->belongsTo(Sport::class, 'sport_id');
     }
 
-    public function homeTeam(): BelongsTo
+    public function homeTeam()
     {
         return $this->belongsTo(Team::class, 'home_team_id');
     }
 
-    public function awayTeam(): BelongsTo
+    public function awayTeam()
     {
         return $this->belongsTo(Team::class, 'away_team_id');
     }

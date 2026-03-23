@@ -90,8 +90,8 @@ class SportMatchController extends Controller
         $awayTeam = Team::query()->findOrFail($payload['away_team_id']);
 
         if (
-            $homeTeam->sport_id !== (int) $payload['sport_id'] ||
-            $awayTeam->sport_id !== (int) $payload['sport_id']
+            (string) $homeTeam->sport_id !== (string) $payload['sport_id'] ||
+            (string) $awayTeam->sport_id !== (string) $payload['sport_id']
         ) {
             throw ValidationException::withMessages([
                 'sport_id' => ['home_team_id and away_team_id must belong to sport_id.'],

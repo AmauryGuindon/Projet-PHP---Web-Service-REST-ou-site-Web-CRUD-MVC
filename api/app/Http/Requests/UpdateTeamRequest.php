@@ -26,8 +26,8 @@ class UpdateTeamRequest extends FormRequest
         $sportId = $this->input('sport_id', $this->route('team')->sport_id);
 
         return [
-            'sport_id' => ['sometimes', 'required', 'integer', 'exists:sports,id'],
-            'name' => ['sometimes', 'required', 'string', 'max:120', Rule::unique('teams', 'name')->where('sport_id', $sportId)->ignore($teamId)],
+            'sport_id' => ['sometimes', 'required', 'string', Rule::exists('mongodb.sports', '_id')],
+            'name' => ['sometimes', 'required', 'string', 'max:120'],
             'short_name' => ['sometimes', 'required', 'string', 'max:16'],
             'country' => ['sometimes', 'required', 'string', 'max:80'],
         ];

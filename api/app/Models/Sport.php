@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sport extends Model
 {
     use HasFactory;
+
+    protected $connection = 'mongodb';
+    protected $collection = 'sports';
 
     protected $fillable = [
         'name',
@@ -16,13 +18,20 @@ class Sport extends Model
         'is_active',
     ];
 
-    public function teams(): HasMany
+    protected function casts(): array
     {
-        return $this->hasMany(Team::class);
+        return [
+            'is_active' => 'boolean',
+        ];
     }
 
-    public function matches(): HasMany
+    public function teams()
     {
-        return $this->hasMany(SportMatch::class);
+        return $this->hasMany(Team::class, 'sport_id');
+    }
+
+    public function matches()
+    {
+        return $this->hasMany(SportMatch::class, 'sport_id');
     }
 }

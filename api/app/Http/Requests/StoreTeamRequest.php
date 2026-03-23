@@ -23,8 +23,8 @@ class StoreTeamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sport_id' => ['required', 'integer', 'exists:sports,id'],
-            'name' => ['required', 'string', 'max:120', Rule::unique('teams', 'name')->where('sport_id', $this->sport_id)],
+            'sport_id' => ['required', 'string', Rule::exists('mongodb.sports', '_id')],
+            'name' => ['required', 'string', 'max:120'],
             'short_name' => ['required', 'string', 'max:16'],
             'country' => ['required', 'string', 'max:80'],
         ];

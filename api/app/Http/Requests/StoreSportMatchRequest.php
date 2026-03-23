@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSportMatchRequest extends FormRequest
 {
@@ -22,9 +23,9 @@ class StoreSportMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sport_id' => ['required', 'integer', 'exists:sports,id'],
-            'home_team_id' => ['required', 'integer', 'exists:teams,id', 'different:away_team_id'],
-            'away_team_id' => ['required', 'integer', 'exists:teams,id'],
+            'sport_id' => ['required', 'string', Rule::exists('mongodb.sports', '_id')],
+            'home_team_id' => ['required', 'string', Rule::exists('mongodb.teams', '_id'), 'different:away_team_id'],
+            'away_team_id' => ['required', 'string', Rule::exists('mongodb.teams', '_id')],
             'starts_at' => ['required', 'date'],
             'status' => ['sometimes', 'in:scheduled,live,finished,cancelled'],
             'home_score' => ['nullable', 'integer', 'min:0'],
