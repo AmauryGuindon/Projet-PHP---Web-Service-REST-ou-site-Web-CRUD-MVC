@@ -39,7 +39,9 @@ class MatchSeeder extends Seeder
                     'sport_id'     => $sport->id,
                     'home_team_id' => $teams[$hi]->id,
                     'away_team_id' => $teams[$ai]->id,
-                    'starts_at'    => now()->addDays($days),
+                    'starts_at'    => $status === 'scheduled'
+                        ? now()->addDays($days)->setTime(20, 30)
+                        : now()->addDays($days)->setTime(18, 0),
                     'status'       => $status,
                     'home_score'   => $homeScore,
                     'away_score'   => $awayScore,

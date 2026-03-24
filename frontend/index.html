@@ -66,6 +66,7 @@
             const data = await Api.get('/sports');
             const sports = data.data || [];
             const el = document.getElementById('sports-list');
+            el.classList.remove('loading');
             if (!sports.length) { el.innerHTML = '<p class="empty">Aucun sport.</p>'; return; }
             el.innerHTML = `<div class="card-grid">${sports.map(s => `
                 <div class="sport-card" onclick="filterBySport('${s.id}','${s.name}')">
@@ -73,7 +74,7 @@
                     <div class="sport-name">${s.name}</div>
                     <div class="sport-slug">${s.slug}</div>
                 </div>`).join('')}</div>`;
-        } catch(e) { document.getElementById('sports-list').innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
+        } catch(e) { const el = document.getElementById('sports-list'); el.classList.remove('loading'); el.innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
     }
 
     async function loadMatches(sportId = null) {
@@ -82,6 +83,7 @@
             const data = await Api.get('/matches' + qs);
             const matches = data.data || [];
             const el = document.getElementById('matches-list');
+            el.classList.remove('loading');
             if (!matches.length) { el.innerHTML = '<p class="empty">Aucun match programmé.</p>'; return; }
 
             const oddsMap = {};
@@ -110,7 +112,7 @@
                     <a href="matches.html" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Parier →</a>
                 </div>`;
             }).join('')}</div>`;
-        } catch(e) { document.getElementById('matches-list').innerHTML = '<p class="alert alert-danger">Erreur.</p>'; }
+        } catch(e) { const el = document.getElementById('matches-list'); el.classList.remove('loading'); el.innerHTML = '<p class="alert alert-danger">Erreur.</p>'; }
     }
 
     function filterBySport(id, name) {

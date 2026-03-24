@@ -55,7 +55,11 @@
 <script src="assets/js/api.js"></script>
 <script src="assets/js/auth.js"></script>
 <script>
-    if (Api.isLoggedIn()) window.location.href = 'index.html';
+    if (Api.isLoggedIn()) {
+        Api.get('/me', true)
+            .then(me => { Api.setUser(me.user); window.location.href = 'index.html'; })
+            .catch(() => { Api.clearToken(); Api.clearUser(); });
+    }
 
     function showTab(tab, btn) {
         document.getElementById('tab-login').style.display = tab==='login' ? '' : 'none';
@@ -72,8 +76,7 @@
         try {
             const res = await Api.post('/auth/login', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value });
             Api.setToken(res.token);
-            const me = await Api.get('/me', true);
-            Api.setUser(me);
+            Api.setUser(res.user);
             window.location.href = 'index.html';
         } catch(err) {
             alertEl.className = 'alert alert-danger';
@@ -94,8 +97,7 @@
         try {
             const res = await Api.post('/auth/register', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, password: pass, password_confirmation: confirm });
             Api.setToken(res.token);
-            const me = await Api.get('/me', true);
-            Api.setUser(me);
+            Api.setUser(res.user);
             window.location.href = 'index.html';
         } catch(err) {
             const errors = err.data?.errors;

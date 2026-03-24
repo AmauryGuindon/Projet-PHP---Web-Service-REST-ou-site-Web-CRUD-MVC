@@ -87,6 +87,13 @@ nav a:not(.nav-brand) {
 nav a:not(.nav-brand):hover { color: var(--text); background: var(--bg-card); }
 nav a:not(.nav-brand).active { color: var(--primary); background: rgba(59,130,246,0.1); }
 
+.nav-links {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 0.25rem;
+}
+
 .nav-spacer { flex: 1; }
 
 .nav-user-pill {
