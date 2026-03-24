@@ -1,0 +1,8 @@
+# Fichiers générés / inutiles
+api/config/tinker.php
+api/docker/
+api/resources/views/errors/
+api/resources/views/vendor/
+api/sail
+api/storage/api-docs/
+cd
