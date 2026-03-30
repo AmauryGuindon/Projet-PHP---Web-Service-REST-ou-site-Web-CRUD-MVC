@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSportMatchRequest;
 use App\Http\Requests\UpdateSportMatchRequest;
+use App\Models\Sport;
 use App\Models\SportMatch;
 use App\Models\Team;
 use App\Services\BetSettlementService;
@@ -20,7 +21,6 @@ class SportMatchController extends Controller
     public function index(): JsonResponse
     {
         $matches = SportMatch::query()
-            ->with(['sport', 'homeTeam', 'awayTeam'])
             ->when(request()->filled('sport_id'), function ($query): void {
                 $query->where('sport_id', request('sport_id'));
             })
@@ -29,6 +29,8 @@ class SportMatchController extends Controller
             })
             ->orderByDesc('starts_at')
             ->paginate(min((int) request('per_page', 15), 50));
+
+        $this->injectRelations($matches->getCollection());
 
         return response()->json($matches);
     }
@@ -102,6 +104,23 @@ class SportMatchController extends Controller
             'bets_resolved' => $count,
             'match'         => $matchItem->fresh(),
         ]);
+    }
+
+    private function injectRelations(\Illuminate\Support\Collection $collection): void
+    {
+        $sportIds   = $collection->pluck('sport_id')->unique()->filter()->values()->all();
+        $homeIds    = $collection->pluck('home_team_id')->unique()->filter()->values()->all();
+        $awayIds    = $collection->pluck('away_team_id')->unique()->filter()->values()->all();
+        $teamIds    = collect(array_merge($homeIds, $awayIds))->unique()->values()->all();
+
+        $sports = collect($sportIds)->mapWithKeys(fn($id) => [(string) $id => Sport::find($id)])->filter();
+        $teams  = collect($teamIds)->mapWithKeys(fn($id) => [(string) $id => Team::find($id)])->filter();
+
+        $collection->each(function ($match) use ($sports, $teams): void {
+            $match->setRelation('sport',    $sports->get((string) $match->sport_id));
+            $match->setRelation('homeTeam', $teams->get((string) $match->home_team_id));
+            $match->setRelation('awayTeam', $teams->get((string) $match->away_team_id));
+        });
     }
 
     private function assertTeamsBelongToSport(array $payload): void
