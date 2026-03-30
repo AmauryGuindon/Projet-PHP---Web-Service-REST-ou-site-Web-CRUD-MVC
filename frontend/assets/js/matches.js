@@ -28,6 +28,7 @@ async function loadMatches() {
     try {
         const data = await Api.get('/matches' + (qs.length ? '?' + qs.join('&') : ''));
         const matches = data.data || [];
+        container.classList.remove('loading');
         if (!matches.length) { container.innerHTML = '<p class="empty">Aucun match trouvé.</p>'; return; }
 
         const oddsData = {};
@@ -65,7 +66,7 @@ async function loadMatches() {
                 ${!canBet && isScheduled ? `<a href="login.html" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">Connexion pour parier</a>` : ''}
             </div>`;
         }).join('')}</div>`;
-    } catch(e) { container.innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
+    } catch(e) { container.classList.remove('loading'); container.innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
 }
 
 function openBetModal(matchId, homeName, awayName, defaultOutcome, homeWin, draw, awayWin) {

@@ -37,6 +37,7 @@ async function loadBets() {
     try {
         const data = await Api.get('/bets' + qs, true);
         const bets = data.data || [];
+        container.classList.remove('loading');
         if (!bets.length) { container.innerHTML = '<p class="empty">Aucun pari trouvé.</p>'; return; }
 
         const labels = { home_win:'Victoire dom.', draw:'Match nul', away_win:'Victoire ext.' };
@@ -51,5 +52,5 @@ async function loadBets() {
                 <td><span class="badge badge-${b.status}">${b.status}</span></td>
             </tr>`).join('')}</tbody>
         </table></div>`;
-    } catch(e) { container.innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
+    } catch(e) { container.classList.remove('loading'); container.innerHTML = '<p class="alert alert-danger">Erreur de chargement.</p>'; }
 }
