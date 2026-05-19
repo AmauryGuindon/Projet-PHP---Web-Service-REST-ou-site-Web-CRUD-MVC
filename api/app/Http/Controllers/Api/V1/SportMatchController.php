@@ -20,14 +20,21 @@ class SportMatchController extends Controller
      */
     public function index(): JsonResponse
     {
+        $includePast = request()->boolean('include_past');
+        $statusFilter = request('status');
+
         $matches = SportMatch::query()
             ->when(request()->filled('sport_id'), function ($query): void {
                 $query->where('sport_id', request('sport_id'));
             })
-            ->when(request()->filled('status'), function ($query): void {
-                $query->where('status', request('status'));
+            ->when($statusFilter, function ($query) use ($statusFilter): void {
+                $query->where('status', $statusFilter);
             })
-            ->orderByDesc('starts_at')
+            ->when(!$includePast && !$statusFilter, function ($query): void {
+                $query->where('status', 'scheduled')
+                    ->where('starts_at', '>', now());
+            })
+            ->orderBy('starts_at')
             ->paginate(min((int) request('per_page', 15), 50));
 
         $this->injectRelations($matches->getCollection());

@@ -51,5 +51,6 @@ Route::prefix('v1')->middleware('throttle:api')->group(function (): void {
             ->except(['index', 'show']);
         Route::apiResource('odds', OddController::class)->except(['index', 'show']);
         Route::post('matches/{matchItem}/settle', [SportMatchController::class, 'settle']);
+        Route::post('/external/sync-matches', [ExternalSyncController::class, 'syncMatches']);
     });
 });

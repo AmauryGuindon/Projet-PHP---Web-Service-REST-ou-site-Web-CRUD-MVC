@@ -34,6 +34,11 @@
         <button class="tab-btn" onclick="showAdminTab('odds',this)">📊 Cotes</button>
     </div>
 
+    <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+        <button id="btn-sync-matches" class="btn" type="button" onclick="syncExternalMatches()">🔄 Synchroniser depuis The Odds API</button>
+        <span id="sync-status" style="align-self:center;color:var(--text-muted);font-size:.9rem"></span>
+    </div>
+
     <div id="admin-alert" style="display:none" class="alert"></div>
     <div id="admin-content"></div>
 </main>

@@ -13,6 +13,7 @@ class Team extends Model
     protected $collection = 'teams';
 
     protected $fillable = [
+        'external_id',
         'sport_id',
         'name',
         'short_name',

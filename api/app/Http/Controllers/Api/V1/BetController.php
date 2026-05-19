@@ -56,6 +56,23 @@ class BetController extends Controller
     {
         $data = $request->validated();
 
+        $match = \App\Models\SportMatch::query()->find($data['match_id']);
+        if (!$match) {
+            throw ValidationException::withMessages([
+                'match_id' => ['Match introuvable.'],
+            ]);
+        }
+        if ($match->status !== 'scheduled') {
+            throw ValidationException::withMessages([
+                'match_id' => ['Ce match n\'accepte plus de paris (déjà commencé ou terminé).'],
+            ]);
+        }
+        if ($match->starts_at && $match->starts_at->isPast()) {
+            throw ValidationException::withMessages([
+                'match_id' => ['Ce match a déjà commencé.'],
+            ]);
+        }
+
         $odd = $this->odds->latestForMatch($data['match_id']);
         if (!$odd) {
             throw ValidationException::withMessages([

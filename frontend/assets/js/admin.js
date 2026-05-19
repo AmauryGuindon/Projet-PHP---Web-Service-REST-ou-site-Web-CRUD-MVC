@@ -22,6 +22,28 @@ function showAlert(msg, type = 'success') {
     setTimeout(() => { el.style.display = 'none'; }, 3500);
 }
 
+async function syncExternalMatches() {
+    const btn = document.getElementById('btn-sync-matches');
+    const status = document.getElementById('sync-status');
+    btn.disabled = true;
+    status.textContent = 'Synchronisation en cours, patience (5-15 s)...';
+    try {
+        const data = await Api.post('/external/sync-matches', {}, true);
+        const s = data.stats || {};
+        status.textContent = `✅ ${s.matches_created || 0} créés, ${s.matches_updated || 0} mis à jour, ${s.odds_created || 0} cotes, ${s.bets_settled || 0} paris résolus.`;
+        showAlert('Synchronisation terminée', 'success');
+        // Rafraîchir le panneau actif si Matchs ou Cotes
+        const activeTab = document.querySelector('.tab-btn.active')?.textContent || '';
+        if (activeTab.includes('Matchs')) loadMatchesAdmin();
+        if (activeTab.includes('Cotes')) loadOddsAdmin();
+    } catch (e) {
+        status.textContent = '❌ Échec : ' + (e.data?.message || e.message || 'erreur réseau');
+        showAlert('Échec de la synchronisation', 'danger');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
 async function loadSportsAdmin() {
     const content = document.getElementById('admin-content');
     content.innerHTML = `

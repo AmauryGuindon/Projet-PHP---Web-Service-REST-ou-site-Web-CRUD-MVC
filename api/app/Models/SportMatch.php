@@ -13,6 +13,7 @@ class SportMatch extends Model
     protected $collection = 'matches';
 
     protected $fillable = [
+        'external_id',
         'sport_id',
         'home_team_id',
         'away_team_id',
