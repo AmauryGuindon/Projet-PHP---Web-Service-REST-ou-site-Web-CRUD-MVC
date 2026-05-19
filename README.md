@@ -105,6 +105,33 @@ Documentation Swagger : http://localhost:8000/api/documentation
 ## Structure du projet
 
 ```
-api/        Laravel 12 (backend REST)
-frontend/   HTML/CSS/JS (client web)
+api/                          Laravel 12 (backend REST)
+  database/mongodb/
+    mapreduce/                Scripts Map Reduce MongoDB (×2)
+    sharding/                 Configuration sharding + script cluster
+    replica_set/              Configuration replica set + script HA
+frontend/                     HTML/CSS/JS (client web)
+docs/
+  RAPPORT.md                  Rapport de projet
+  ARCHITECTURE.md             Guide d'architecture
+  uml/                        Diagrammes UML (Mermaid)
+.github/workflows/ci.yml      Pipeline CI (tests + lint Pint)
+```
+
+## Documentation
+
+- [Rapport de projet](docs/RAPPORT.md)
+- [Guide d'architecture](docs/ARCHITECTURE.md)
+- [Diagrammes UML](docs/uml/README.md)
+- [Scripts MongoDB Map Reduce](api/database/mongodb/mapreduce/README.md)
+- [Sharding](api/database/mongodb/sharding/README.md)
+- [Replica Set](api/database/mongodb/replica_set/README.md)
+
+## Tests
+
+```bash
+cd api
+php artisan test                 # exécute Feature + Unit
+php artisan test --coverage      # avec couverture (Xdebug requis)
+./vendor/bin/pint --test         # lint PSR-12
 ```
